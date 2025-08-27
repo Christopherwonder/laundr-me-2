@@ -9,28 +9,52 @@ The application is a hybrid of best-in-class service apps:
  * Zoho: A simplified CRM for managing client relationships. The lightweight CRM allows users to save contacts and add private notes, which is crucial for building and maintaining a professional client list over time.
 Technical Architecture
 Our development philosophy is "build first and open-source second" to maximize velocity and ownership.
- * Frontend: React Native with TypeScript.
- * Backend: Python (Flask).
+ * Frontend: React Native with Expo.
+ * Backend: Python (FastAPI).
  * Database: PostgreSQL for persistent data like user profiles, transactions, and appointments.
  * Cache: Redis for session management and real-time features.
- * DevOps: The entire stack is containerized with Docker and designed for deployment on a PaaS like Heroku or AWS Free Tier.
+ * CI/CD: The project includes a continuous integration pipeline for linting, testing, and security scanning.
  * Security: We utilize JWT for API authentication, Bcrypt for password hashing, and SSL/TLS for all data in transit. All user-facing changes require human approval via a dedicated CI/CD gate before deployment.
 Getting Started
-The laundr.me application is a monorepo that contains both frontend and backend packages. The entire project is containerized with Docker and the infrastructure is managed with Kubernetes.
-Prerequisites:
- * Docker
- * kubectl (Kubernetes command-line tool)
- * A Kubernetes cluster (local or cloud-based)
-Deployment:
- * Clone the repository:
-   git clone https://github.com/your-username/laundr.me.git
-cd laundr.me
+The laundr.me application is a monorepo that contains both frontend and backend packages.
 
- * Configure secrets and environment variables as defined in infra/kubernetes/config/secrets/.
- * Deploy the application to your Kubernetes cluster:
-   kubectl apply -f infra/kubernetes/namespaces/development.yaml
-kubectl apply -f infra/kubernetes/deployments/
-kubectl apply -f infra/kubernetes/services/
+Prerequisites:
+ * Python 3.11+
+ * Node.js 22+ (which includes npm)
+ * Redis
+
+Setup & Running:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/your-username/laundr.me.git
+   cd laundr.me
+   ```
+
+2. **Run the backend:**
+   - Install dependencies:
+     ```bash
+     pip install -r backend/requirements.txt
+     ```
+   - Start the FastAPI server:
+     ```bash
+     uvicorn app.main:app --reload --app-dir backend
+     ```
+   The API will be available at `http://127.0.0.1:8000`.
+
+3. **Run the frontend:**
+   - Navigate to the frontend directory:
+     ```bash
+     cd frontend
+     ```
+   - Install dependencies:
+     ```bash
+     npm install
+     ```
+   - Start the Expo development server:
+     ```bash
+     npm start
+     ```
+   This will open a browser window with the Expo developer tools. You can then run the app on a simulator or on your physical device using the Expo Go app.
 
 Contribution
 We follow a "build first, open-source second" philosophy to maximize velocity and ownership. The project is not currently open for external contributions.
