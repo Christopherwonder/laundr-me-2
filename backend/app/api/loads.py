@@ -16,7 +16,7 @@ invite_serializer = URLSafeTimedSerializer(SECRET_KEY)
 
 # Dummy audit log
 def audit_log(action: str, details: dict):
-    print(f"AUDIT: {action} - {details}")
+    astra.log_transaction(action, details)
 
 
 @router.post("/send-load", response_model=LoadResponse)

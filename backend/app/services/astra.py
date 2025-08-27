@@ -1,8 +1,26 @@
 import uuid
+from datetime import datetime, timezone
+from typing import List, Dict, Any
 from app.schemas.astra import AstraUserIntentCreate, AstraUserIntent
 from app.schemas.loads import AstraRoutineCreate, AstraRoutine
 
 ASTRA_API_URL = "https://api.astra.financial/v1"
+
+# In-memory database for demonstration purposes
+transactions_db: List[Dict[str, Any]] = []
+
+
+def log_transaction(action: str, details: dict):
+    """Stores a transaction event for the activity feed."""
+    print(f"AUDIT: {action} - {details}")
+    log_entry = {
+        "action": action,
+        "details": details,
+        "timestamp": datetime.now(timezone.utc),
+        "status": "completed"  # Mock status for all transactions
+    }
+    transactions_db.append(log_entry)
+
 
 async def create_user_intent(user_data: AstraUserIntentCreate) -> AstraUserIntent:
     """
