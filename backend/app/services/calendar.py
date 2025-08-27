@@ -1,0 +1,44 @@
+from app.schemas.bookings import CalendarEvent, Availability
+from typing import List
+import uuid
+from datetime import datetime
+
+# In-memory database for demonstration purposes
+calendar_db = {}
+
+
+def get_availability(freelancer_id: str) -> List[Availability]:
+    """Returns a list of available time slots for a freelancer."""
+    # This is a placeholder implementation.
+    # In a real application, this would query the database for the freelancer's schedule.
+    return [
+        Availability(start_time=datetime(2025, 9, 1, 9, 0), end_time=datetime(2025, 9, 1, 11, 0)),
+        Availability(start_time=datetime(2025, 9, 1, 14, 0), end_time=datetime(2025, 9, 1, 17, 0)),
+    ]
+
+
+def create_event(event: CalendarEvent) -> CalendarEvent:
+    """Creates a new calendar event."""
+    event_id = str(uuid.uuid4())
+    new_event = CalendarEvent(id=event_id, **event.dict())
+    calendar_db[event_id] = new_event
+    return new_event
+
+
+def update_event(event_id: str, event_update: CalendarEvent) -> CalendarEvent:
+    """Updates an existing calendar event."""
+    event = calendar_db.get(event_id)
+    if not event:
+        return None
+    event.start_time = event_update.start_time
+    event.end_time = event_update.end_time
+    event.is_available = event_update.is_available
+    return event
+
+
+def delete_event(event_id: str):
+    """Deletes a calendar event."""
+    if event_id in calendar_db:
+        del calendar_db[event_id]
+        return True
+    return False
