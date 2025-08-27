@@ -1,0 +1,9 @@
+{
+  "updates": [
+    {
+      "update_id": "REG-2023-001",
+      "description": "New KYC data point required: 'proof_of_address'.",
+      "effective_date": "2023-12-01"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+kyc_requirements:
+  - 'full_name'
+  - 'date_of_birth'
+  - 'government_id'
+
+transaction_limits:
+  daily_velocity: 5
+  daily_amount_usd: 1000
