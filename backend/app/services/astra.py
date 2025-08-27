@@ -1,5 +1,6 @@
 import uuid
 from app.schemas.astra import AstraUserIntentCreate, AstraUserIntent
+from app.schemas.loads import AstraRoutineCreate, AstraRoutine
 
 ASTRA_API_URL = "https://api.astra.financial/v1"
 
@@ -14,3 +15,15 @@ async def create_user_intent(user_data: AstraUserIntentCreate) -> AstraUserInten
     # Mocked response
     user_intent_id = f"ui_{uuid.uuid4()}"
     return AstraUserIntent(id=user_intent_id, status="pending")
+
+async def create_routine(routine_data: AstraRoutineCreate) -> AstraRoutine:
+    """
+    Creates a routine with the Astra API.
+    In a real implementation, this would make a POST request to the Astra API.
+    For now, we'll mock the response.
+    """
+    print(f"Calling Astra API to create {routine_data.type} routine for {routine_data.amount}")
+
+    # Mocked response
+    routine_id = f"rt_{uuid.uuid4()}"
+    return AstraRoutine(id=routine_id, status="completed")
