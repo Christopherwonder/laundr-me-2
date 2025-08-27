@@ -71,3 +71,8 @@ async def counter_booking(booking_id: str, booking_update: BookingUpdate) -> Boo
     booking.status = BookingStatus.COUNTERED
     audit_log("booking_countered", {"booking_id": booking_id, "update": booking_update.model_dump()})
     return booking
+
+
+async def get_all_bookings():
+    """Returns all bookings."""
+    return list(bookings_db.values())
