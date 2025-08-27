@@ -1,9 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException
+from typing import List
 from app.schemas.bookings import BookingCreate, BookingResponse, BookingUpdate
 from app.services import bookings as bookings_service
 from app.services import redis as redis_service
 
 router = APIRouter()
+
+
+@router.get("/", response_model=List[BookingResponse])
+async def get_all_bookings():
+    return await bookings_service.get_all_bookings()
 
 
 @router.post("/", response_model=BookingResponse)
