@@ -17,3 +17,7 @@ types-requests>=2.31.0.1
 # Security & Static Analysis
 bandit>=1.7.5
 safety>=2.3.5
+-r requirements.txt
+pytest
+httpx
+pytest-asyncio

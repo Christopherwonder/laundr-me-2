@@ -1,0 +1,48 @@
+# /orchestration/jules_dag.yml
+
+# Dependency graph for the laundr.me backend services and agents.
+# This file defines the operational dependencies between different components
+# of the system, ensuring that the orchestration layer understands the
+# relationships and can manage the services accordingly.
+
+nodes:
+  - id: compliance_middleware
+    type: middleware
+    description: "Intercepts financial transactions to perform compliance checks."
+    dependencies:
+      - fraud_service
+      - velocity_checker
+      - profiles_db  # For KYC status
+
+  - id: fraud_service
+    type: agent
+    description: "Calculates a risk score for a given transaction."
+    dependencies: []
+
+  - id: velocity_checker
+    type: agent
+    description: "Checks for rapid, repeated transactions."
+    dependencies: []
+
+  - id: profiles_api
+    type: api_endpoint
+    description: "Manages user profiles and KYC status."
+    dependencies:
+      - astra_service
+      - profiles_db
+
+  - id: astra_service
+    type: service
+    description: "Interacts with the Astra Financial API."
+    dependencies:
+      - astra_contract_sentinel
+
+  - id: astra_contract_sentinel
+    type: utility
+    description: "Validates outgoing requests to the Astra API."
+    dependencies: []
+
+  - id: profiles_db
+    type: database
+    description: "In-memory database for user profiles."
+    dependencies: []
