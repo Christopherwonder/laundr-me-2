@@ -90,6 +90,27 @@ jobs:
       - name: Run frontend tests
         run: echo "Frontend test step to be configured" # Placeholder
 
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install security dependencies
+        run: pip install bandit safety
+
+      - name: Run bandit
+        run: bandit -r backend/
+
+      - name: Run safety
+        run: safety scan
+
   spec-invariants:
     name: Spec Invariant Checks
     runs-on: ubuntu-latest
