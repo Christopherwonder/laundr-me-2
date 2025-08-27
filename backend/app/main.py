@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.api import profiles, settings, loads, bookings, calendar
+from app.api import profiles, settings, loads, bookings, calendar, directory
 from app.middleware.compliance import ComplianceMiddleware
 
 app = FastAPI()
