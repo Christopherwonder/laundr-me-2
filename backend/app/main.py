@@ -11,6 +11,7 @@ app.include_router(settings.router, prefix="/api/v1/settings", tags=["settings"]
 app.include_router(loads.router, prefix="/api/v1/loads", tags=["loads"])
 app.include_router(bookings.router, prefix="/api/v1/bookings", tags=["bookings"])
 app.include_router(calendar.router, prefix="/api/v1/calendar", tags=["calendar"])
+app.include_router(directory.router, prefix="/api/v1/directory", tags=["directory"])
 
 @app.get("/")
 async def root():
