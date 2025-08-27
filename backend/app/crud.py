@@ -33,11 +33,8 @@ async def search_profiles(query: SearchQuery) -> dict:
         )
 
         if is_match:
-            if profile.skill_tags:
-                if isinstance(profile, FreelancerProfile):
-                    freelancers.append(profile)
-                else:
-                    freelancers.append(FreelancerProfile(**profile.model_dump()))
+            if isinstance(profile, FreelancerProfile):
+                freelancers.append(profile)
             else:
                 users.append(profile)
 

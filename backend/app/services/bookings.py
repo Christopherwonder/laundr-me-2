@@ -18,7 +18,7 @@ async def create_booking(booking: BookingCreate) -> BookingResponse:
     new_booking = BookingResponse(
         id=booking_id,
         status=BookingStatus.PENDING,
-        **booking.dict()
+        **booking.model_dump()
     )
     bookings_db[booking_id] = new_booking
     audit_log("booking_created", {"booking_id": booking_id})
@@ -69,5 +69,5 @@ async def counter_booking(booking_id: str, booking_update: BookingUpdate) -> Boo
         booking.price = booking_update.price
 
     booking.status = BookingStatus.COUNTERED
-    audit_log("booking_countered", {"booking_id": booking_id, "update": booking_update.dict()})
+    audit_log("booking_countered", {"booking_id": booking_id, "update": booking_update.model_dump()})
     return booking

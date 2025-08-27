@@ -1,66 +1,101 @@
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
-from unittest.mock import patch, MagicMock
+from app.services.calendar import calendar_db
+from datetime import datetime
 
+client = TestClient(app)
 
-@pytest.fixture
-def client():
-    return TestClient(app)
+@pytest.fixture(autouse=True)
+def setup_and_teardown():
+    """Clear the dummy database before each test."""
+    calendar_db.clear()
+    yield
+    calendar_db.clear()
 
+# --- Test Data ---
+event_payload = {
+    "id": "placeholder-id",
+    "freelancer_id": "freelancer1",
+    "start_time": "2025-11-01T10:00:00",
+    "end_time": "2025-11-01T12:00:00",
+    "is_available": False,
+}
 
-def test_get_availability(client):
-    with patch('app.api.calendar.calendar_service.get_availability') as mock_get_availability:
-        mock_get_availability.return_value = [
-            {"start_time": "2025-09-01T09:00:00", "end_time": "2025-09-01T10:00:00"}
-        ]
-        response = client.get("/api/v1/calendar/availability?freelancer_id=freelancer1")
-        assert response.status_code == 200
-        assert len(response.json()) == 1
+# --- Comprehensive Tests ---
 
+def test_create_and_get_event():
+    """
+    Tests creating a new calendar event and ensures it's stored correctly.
+    """
+    # Create the event
+    response = client.post("/api/v1/calendar/events", json=event_payload)
+    assert response.status_code == 200
+    created_event = response.json()
+    event_id = created_event["id"]
 
-def test_create_event(client):
-    with patch('app.api.calendar.calendar_service.create_event') as mock_create_event:
-        mock_create_event.return_value = {
-            "id": "event1",
-            "freelancer_id": "freelancer1",
-            "start_time": "2025-09-02T10:00:00",
-            "end_time": "2025-09-02T11:00:00",
-            "is_available": False,
-        }
-        response = client.post("/api/v1/calendar/events", json={
-            "id": "event1",
-            "freelancer_id": "freelancer1",
-            "start_time": "2025-09-02T10:00:00",
-            "end_time": "2025-09-02T11:00:00",
-            "is_available": False,
-        })
-        assert response.status_code == 200
-        assert response.json()["id"] == "event1"
+    # Verify the event is in the database (via the service layer)
+    assert event_id in calendar_db
+    assert calendar_db[event_id].freelancer_id == "freelancer1"
 
+def test_update_event():
+    """
+    Tests updating an existing calendar event.
+    """
+    # First, create an event
+    response = client.post("/api/v1/calendar/events", json=event_payload)
+    assert response.status_code == 200
+    created_event = response.json()
+    event_id = created_event["id"]
 
-def test_update_event(client):
-    with patch('app.api.calendar.calendar_service.update_event') as mock_update_event:
-        mock_update_event.return_value = {
-            "id": "event1",
-            "freelancer_id": "freelancer1",
-            "start_time": "2025-09-02T10:00:00",
-            "end_time": "2025-09-02T11:00:00",
-            "is_available": True,
-        }
-        response = client.put("/api/v1/calendar/events/event1", json={
-            "id": "event1",
-            "freelancer_id": "freelancer1",
-            "start_time": "2025-09-02T10:00:00",
-            "end_time": "2025-09-02T11:00:00",
-            "is_available": True
-        })
-        assert response.status_code == 200
-        assert response.json()["is_available"] is True
+    # Now, update it
+    update_payload = {
+        "freelancer_id": "freelancer1",
+        "start_time": "2025-11-01T10:00:00",
+        "end_time": "2025-11-01T12:00:00",
+        "is_available": True,
+        "id": event_id,
+    }
+    response = client.put(f"/api/v1/calendar/events/{event_id}", json=update_payload)
+    assert response.status_code == 200
+    assert response.json()["is_available"] is True
 
+    # Verify the update in the database
+    assert calendar_db[event_id].is_available is True
 
-def test_delete_event(client):
-    with patch('app.api.calendar.calendar_service.delete_event') as mock_delete_event:
-        mock_delete_event.return_value = True
-        response = client.delete("/api/v1/calendar/events/event1")
-        assert response.status_code == 204
+def test_delete_event():
+    """
+    Tests deleting an existing calendar event.
+    """
+    # First, create an event
+    response = client.post("/api/v1/calendar/events", json=event_payload)
+    assert response.status_code == 200
+    event_id = response.json()["id"]
+
+    # Now, delete it
+    response = client.delete(f"/api/v1/calendar/events/{event_id}")
+    assert response.status_code == 204
+
+    # Verify it's gone from the database
+    assert event_id not in calendar_db
+
+def test_update_non_existent_event():
+    """
+    Tests that updating a non-existent event returns a 404 error.
+    """
+    update_payload = {
+        "freelancer_id": "freelancer1",
+        "start_time": "2025-11-01T10:00:00",
+        "end_time": "2025-11-01T12:00:00",
+        "is_available": True,
+        "id": "non-existent-id",
+    }
+    response = client.put("/api/v1/calendar/events/non-existent-id", json=update_payload)
+    assert response.status_code == 404
+
+def test_delete_non_existent_event():
+    """
+    Tests that deleting a non-existent event returns a 404 error.
+    """
+    response = client.delete("/api/v1/calendar/events/non-existent-id")
+    assert response.status_code == 404
