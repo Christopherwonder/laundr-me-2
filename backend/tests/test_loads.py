@@ -3,6 +3,8 @@ from fastapi.testclient import TestClient
 from app.main import app
 from app.crud import db_profiles, db_settings
 from app.schemas.profile import Profile
+from app.api.loads import invite_serializer
+from itsdangerous import SignatureExpired
 
 client = TestClient(app)
 
@@ -51,7 +53,14 @@ def test_send_load_success_off_platform():
     data = response.json()
     assert data["message"] == "Load sent to an off-platform user. They will be invited to join."
     assert data["invite_link"] is not None
-    assert "@newuser" in data["invite_link"]
+
+    # Verify the token
+    token = data["invite_link"].split("=")[-1]
+    # In a real test suite, we might use freezegun to test expiration
+    # For now, we'll just check that it decodes correctly.
+    decoded_id = invite_serializer.loads(token, salt="invite-salt", max_age=1800) # 30 minutes
+    assert decoded_id == "@newuser"
+
 
 def test_send_load_minimum_fee():
     response = client.post(
@@ -143,7 +152,7 @@ def test_swap_funds_destination_not_found():
 def test_swap_funds_below_minimum_amount():
     response = client.post(
         "/api/v1/loads/swap-funds",
-        json={"source_id": "@user1", "destination_id": "@user2", "amount": 0}
+        json={"source_id": "@user1", "destination_id": "@user2", "amount": 4.99}
     )
-    # This will be caught by Pydantic's gt=0 validation
-    assert response.status_code == 422
+    assert response.status_code == 400
+    assert "at least $5.00" in response.json()["detail"]
