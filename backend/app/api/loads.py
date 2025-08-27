@@ -1,4 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
+from itsdangerous import URLSafeTimedSerializer
+from datetime import timedelta
+
 from app.schemas.loads import LoadCreate, LoadResponse, SwapFunds, AstraRoutineCreate
 from app.services import astra
 from app.utils import calculate_fees
@@ -6,9 +9,15 @@ from app.crud import db_profiles, get_profile_by_laundr_id
 
 router = APIRouter()
 
+# In a real app, this should be loaded from a secure config
+SECRET_KEY = "a_very_secret_key_for_invites"
+invite_serializer = URLSafeTimedSerializer(SECRET_KEY)
+
+
 # Dummy audit log
 def audit_log(action: str, details: dict):
     print(f"AUDIT: {action} - {details}")
+
 
 @router.post("/send-load", response_model=LoadResponse)
 async def send_load(load: LoadCreate):
@@ -26,8 +35,8 @@ async def send_load(load: LoadCreate):
     invite_link = None
     if not recipient_profile:
         # Off-platform user, generate invite link
-        # In a real app, this would be a secure, expiring link
-        invite_link = f"https://laundr.me/claim?code=TEMP_{load.recipient_id}"
+        token = invite_serializer.dumps(load.recipient_id, salt="invite-salt")
+        invite_link = f"https://laundr.me/claim?token={token}"
         message = "Load sent to an off-platform user. They will be invited to join."
     else:
         message = "Load sent successfully to on-platform user."
