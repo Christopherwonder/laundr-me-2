@@ -4,7 +4,7 @@ from datetime import timedelta
 
 from app.schemas.loads import LoadCreate, LoadResponse, SwapFunds, AstraRoutineCreate
 from app.services import astra
-from app.utils import calculate_fees
+from app.fee_calculator import calculate_fees
 from app.crud import db_profiles, get_profile_by_laundr_id
 
 router = APIRouter()
