@@ -5,7 +5,13 @@ import json
 
 from agents.security.fraud_service import FraudService
 from agents.security.velocity_checker import VelocityChecker
-from app.crud import get_profile_by_id
+from app.crud import get_profile_by_laundr_id
+
+FINANCIAL_PATHS = [
+    "/api/v1/loads/send-load",
+    "/api/v1/loads/request-load",
+    "/api/v1/loads/swap-funds",
+]
 
 class ComplianceMiddleware(BaseHTTPMiddleware):
     def __init__(self, app):
@@ -14,46 +20,35 @@ class ComplianceMiddleware(BaseHTTPMiddleware):
         self.velocity_checker = VelocityChecker()
 
     async def dispatch(self, request: Request, call_next):
-        # We will assume that any request that is not a GET request is a financial transaction
-        # for the purpose of this task.
-        if request.method != "GET":
-            print(f"Intercepted financial transaction: {request.method} {request.url.path}")
+        if request.url.path in FINANCIAL_PATHS:
+            body = await request.body()
+            transaction_details = json.loads(body) if body else {}
 
-            path_parts = request.url.path.split('/')
-            user_id = None
-            if len(path_parts) > 4 and path_parts[3] == "profiles":
-                try:
-                    user_id = int(path_parts[4])
-                except (ValueError, IndexError):
-                    # Not a path with a user_id, so we can't do compliance checks.
-                    # We will allow it to proceed, but in a real-world scenario we might want to deny it.
-                    pass
+            sender_id = transaction_details.get("sender_id") or transaction_details.get("source_id")
 
-            if user_id:
-                # 1. Check KYC status
-                try:
-                    profile = await get_profile_by_id(user_id)
-                    if profile.kyc_status != "verified":
-                        return JSONResponse(status_code=403, content={"detail": "KYC not verified"})
-                except HTTPException as e:
-                    if e.status_code == 404:
-                        # Profile not found, let it proceed to be handled by the endpoint
-                        pass
-                    else:
-                        raise
+            if not sender_id:
+                # If we can't identify the user, we can't perform checks.
+                # In a real-world scenario, we might want to block this.
+                # For now, we will allow it to proceed and let the endpoint handle it.
+                return await call_next(request)
 
-                # 2. Perform risk analysis
-                # We need to get the transaction details from the request body.
-                body = await request.body()
-                transaction_details = json.loads(body) if body else {}
+            # 1. Check KYC status
+            profile = await get_profile_by_laundr_id(sender_id)
+            if not profile:
+                # Let the endpoint handle the "profile not found" error
+                return await call_next(request)
 
-                risk_score_result = self.fraud_service.get_risk_score(transaction_details)
-                if risk_score_result.get("risk_score", 0) > 0.75:
-                    return JSONResponse(status_code=403, content={"detail": "Transaction risk too high"})
+            if profile.kyc_status != "verified":
+                return JSONResponse(status_code=403, content={"detail": "KYC not verified"})
 
-                velocity_check_result = self.velocity_checker.check_transaction_velocity(str(user_id), transaction_details)
-                if velocity_check_result.get("velocity_exceeded"):
-                    return JSONResponse(status_code=403, content={"detail": "Transaction velocity exceeded"})
+            # 2. Perform risk analysis
+            risk_score_result = self.fraud_service.get_risk_score(transaction_details)
+            if risk_score_result.get("risk_score", 0) > 0.75:
+                return JSONResponse(status_code=403, content={"detail": "Transaction risk too high"})
+
+            velocity_check_result = self.velocity_checker.check_transaction_velocity(profile.laundr_id, transaction_details)
+            if velocity_check_result.get("velocity_exceeded"):
+                return JSONResponse(status_code=403, content={"detail": "Transaction velocity exceeded"})
 
         response = await call_next(request)
         return response

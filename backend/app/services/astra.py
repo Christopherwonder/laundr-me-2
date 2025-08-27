@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from typing import List, Dict, Any
 from app.schemas.astra import AstraUserIntentCreate, AstraUserIntent
 from app.schemas.loads import AstraRoutineCreate, AstraRoutine
+from app.utils.astra_contract import validate_astra_contract
 
 ASTRA_API_URL = "https://api.astra.financial/v1"
 
@@ -28,6 +29,9 @@ async def create_user_intent(user_data: AstraUserIntentCreate) -> AstraUserInten
     In a real implementation, this would make a POST request to the Astra API.
     For now, we'll mock the response.
     """
+    if not validate_astra_contract(user_data.model_dump(), AstraUserIntentCreate):
+        raise ValueError("Invalid user intent data for Astra contract")
+
     print(f"Calling Astra API to create user intent for {user_data.laundr_id}")
 
     # Mocked response
@@ -40,6 +44,9 @@ async def create_routine(routine_data: AstraRoutineCreate) -> AstraRoutine:
     In a real implementation, this would make a POST request to the Astra API.
     For now, we'll mock the response.
     """
+    if not validate_astra_contract(routine_data.model_dump(), AstraRoutineCreate):
+        raise ValueError("Invalid routine data for Astra contract")
+
     print(f"Calling Astra API to create {routine_data.type} routine for {routine_data.amount}")
 
     # Mocked response

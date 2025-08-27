@@ -29,7 +29,7 @@ async def create_profile(profile: ProfileCreate):
         user_id=next_user_id,
         user_intent_id=user_intent.id,
         kyc_status=user_intent.status,
-        **profile.model_dump(by_alias=True)
+        **profile.model_dump()
     )
     db_profiles[next_user_id] = new_profile
     audit_log("create_profile", {"user_id": next_user_id, "laundr_id": new_profile.laundr_id, "user_intent_id": user_intent.id})
