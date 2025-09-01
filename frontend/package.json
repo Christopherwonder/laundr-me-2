@@ -32,5 +32,8 @@
     "jest-expo": "^53.0.9",
     "react-test-renderer": "^19.0.0"
   },
-  "private": true
+  "private": true,
+  "overrides": {
+    "glob": "^10.4.5"
+  }
 }
