@@ -15,6 +15,33 @@ Our development philosophy is "build first and open-source second" to maximize v
  * Cache: Redis for session management and real-time features.
  * CI/CD: The project includes a continuous integration pipeline for linting, testing, and security scanning.
  * Security: We utilize JWT for API authentication, Bcrypt for password hashing, and SSL/TLS for all data in transit. All user-facing changes require human approval via a dedicated CI/CD gate before deployment.
+## Running the Prototype
+
+This repository contains a functional frontend prototype that can be run without the backend. The prototype uses mocked data to simulate API calls.
+
+To run the prototype, follow these steps:
+
+1.  **Navigate to the frontend directory:**
+    ```bash
+    cd frontend
+    ```
+
+2.  **Install the dependencies:**
+    ```bash
+    npm install
+    ```
+
+3.  **Start the application:**
+    ```bash
+    npm start
+    ```
+
+This will start the Expo development server and open a new browser tab with the Expo Developer Tools. From there, you can:
+*   **Run on an iOS simulator:** Click "Run on iOS simulator". (Requires Xcode to be installed on a Mac).
+*   **Run on a physical device:** Download the "Expo Go" app on your iPhone. Then, scan the QR code shown in the terminal or in the browser tab with your phone's camera.
+
+**Note:** The backend is not required to run the prototype. The instructions in the "Getting Started" section below are for running the full application with the live backend.
+
 Getting Started
 The laundr.me application is a monorepo that contains both frontend and backend packages.
 
