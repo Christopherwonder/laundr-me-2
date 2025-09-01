@@ -4,19 +4,19 @@ import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-nativ
 const API_URL = 'http://localhost:8000';
 
 const fetchActivity = async (userId) => {
-  try {
-    const response = await fetch(`${API_URL}/analytics/activity/${userId}`);
+  console.log(`Mock fetching activity for userId: ${userId}`);
+  // Simulate a network request delay
+  await new Promise(resolve => setTimeout(resolve, 1000));
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.detail || 'Failed to fetch activity');
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching activity:', error);
-    throw error;
-  }
+  // Return a mock success response
+  return {
+    items: [
+      { id: 'act_1', type: 'Deposit', timestamp: '2023-10-27T10:00:00Z', details: { amount: 500 } },
+      { id: 'act_2', type: 'Payment', timestamp: '2023-10-26T15:30:00Z', details: { amount: -50 } },
+      { id: 'act_3', type: 'Booking', timestamp: '2023-10-25T11:00:00Z', details: { amount: -150 } },
+      { id: 'act_4', type: 'Withdrawal', timestamp: '2023-10-24T18:45:00Z', details: { amount: -200 } },
+    ],
+  };
 };
 
 const ICONS = {
