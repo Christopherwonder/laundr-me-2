@@ -1,7 +1,5 @@
 import io
 import csv
-import io
-import csv
 from typing import List
 from datetime import datetime, date, timedelta, timezone
 from app.schemas.analytics import ActivityItem, ActivityType
