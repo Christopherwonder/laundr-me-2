@@ -1,7 +1,8 @@
 from .utils.logging import log_audit
 
 class VelocityChecker:
-    def check_transaction_velocity(self, user_id: str, transaction_details: dict) -> dict:
+    @staticmethod
+    def check_transaction_velocity(user_id: str, transaction_details: dict) -> dict:
         """
         Checks for rapid, repeated transactions.
 
