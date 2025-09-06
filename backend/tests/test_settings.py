@@ -20,7 +20,7 @@ def test_get_settings():
     assert response.status_code == 200
     data = response.json()
     assert data["user_id"] == user_id
-    assert data["biometric_enabled"] == False
+    assert data["biometric_enabled"] is False
     assert data["spending_limit"] == 1000.0
 
 def test_update_settings_unverified():
