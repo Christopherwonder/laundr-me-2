@@ -72,7 +72,7 @@ async def sort_freelancers(params: SortParams) -> List[FreelancerProfile]:
         score += price * params.price_weight
         return score
 
-    reverse = True if params.sort_by in ["rating", "score"] else False
+    reverse = params.sort_by in ["rating", "score"]
 
     key_func = None
     if params.sort_by == "score":
