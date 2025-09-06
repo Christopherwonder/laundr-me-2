@@ -1,7 +1,8 @@
 from .utils.logging import log_audit
 
 class AnomalyDetector:
-    def detect_anomalies(self, user_actions: list) -> dict:
+    @staticmethod
+    def detect_anomalies(user_actions: list) -> dict:
         """
         Identifies unusual patterns in user actions.
 
