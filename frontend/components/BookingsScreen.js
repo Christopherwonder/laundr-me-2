@@ -4,19 +4,17 @@ import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-nativ
 const API_URL = 'http://localhost:8000';
 
 const fetchBookings = async () => {
-  try {
-    const response = await fetch(`${API_URL}/bookings/`);
+  console.log('Mock fetching bookings');
+  // Simulate a network request delay
+  await new Promise(resolve => setTimeout(resolve, 1000));
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.detail || 'Failed to fetch bookings');
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching bookings:', error);
-    throw error;
-  }
+  // Return a mock success response
+  return [
+    { id: 'booking_1', client_id: 'client_A', freelancer_id: 'freelancer_X', price: 150, status: 'APPROVED' },
+    { id: 'booking_2', client_id: 'client_B', freelancer_id: 'freelancer_Y', price: 200, status: 'PENDING' },
+    { id: 'booking_3', client_id: 'client_C', freelancer_id: 'freelancer_Z', price: 75, status: 'COMPLETED' },
+    { id: 'booking_4', client_id: 'client_D', freelancer_id: 'freelancer_X', price: 300, status: 'CANCELLED' },
+  ];
 };
 
 export default function BookingsScreen() {

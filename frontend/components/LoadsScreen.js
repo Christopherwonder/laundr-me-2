@@ -5,29 +5,16 @@ import { authenticate } from '../utils/auth';
 const API_URL = 'http://localhost:8000'; // Assuming the backend is running on port 8000
 
 const sendLoad = async (amount, senderId, recipientId) => {
-  try {
-    const response = await fetch(`${API_URL}/send-load`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        amount: parseFloat(amount),
-        sender_id: senderId,
-        recipient_id: recipientId,
-      }),
-    });
+  console.log(`Mock sending load of ${amount} from ${senderId} to ${recipientId}`);
+  // Simulate a network request delay
+  await new Promise(resolve => setTimeout(resolve, 1000));
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.detail || 'Failed to send load');
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error sending load:', error);
-    throw error;
-  }
+  // Return a mock success response
+  return {
+    transaction_id: `mock_tx_${Date.now()}`,
+    status: 'completed',
+    amount: parseFloat(amount),
+  };
 };
 
 export default function LoadsScreen() {

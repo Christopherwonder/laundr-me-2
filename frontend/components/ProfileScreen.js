@@ -4,19 +4,18 @@ import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'rea
 const API_URL = 'http://localhost:8000';
 
 const fetchProfile = async (userId) => {
-  try {
-    const response = await fetch(`${API_URL}/profiles/${userId}`);
+  console.log(`Mock fetching profile for userId: ${userId}`);
+  // Simulate a network request delay
+  await new Promise(resolve => setTimeout(resolve, 1000));
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.detail || 'Failed to fetch profile');
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching profile:', error);
-    throw error;
-  }
+  // Return a mock success response
+  return {
+    first_name: 'John',
+    last_name: 'Doe',
+    laundr_id: 'johndoe',
+    email: 'john.doe@example.com',
+    kyc_status: 'Verified',
+  };
 };
 
 export default function ProfileScreen() {

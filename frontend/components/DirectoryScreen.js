@@ -4,25 +4,19 @@ import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-nativ
 const API_URL = 'http://localhost:8000';
 
 const searchDirectory = async (query = '') => {
-  try {
-    const response = await fetch(`${API_URL}/search`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ query }),
-    });
+  console.log(`Mock searching directory with query: ${query}`);
+  // Simulate a network request delay
+  await new Promise(resolve => setTimeout(resolve, 1000));
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.detail || 'Failed to search directory');
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error searching directory:', error);
-    throw error;
-  }
+  // Return a mock success response
+  return {
+    profiles: [
+      { laundr_id: 'user_1', name: 'Alice Johnson', specialty: 'Graphic Designer' },
+      { laundr_id: 'user_2', name: 'Bob Williams', specialty: 'Web Developer' },
+      { laundr_id: 'user_3', name: 'Charlie Brown', specialty: 'Data Scientist' },
+      { laundr_id: 'user_4', name: 'Diana Prince', specialty: 'Marketing Expert' },
+    ],
+  };
 };
 
 export default function DirectoryScreen() {
