@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from app.schemas.settings import Settings, SettingsUpdate
 from app.dependencies import get_current_verified_user
 from app.schemas.profile import Profile

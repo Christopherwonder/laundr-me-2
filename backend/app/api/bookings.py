@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 from typing import List
 from app.schemas.bookings import BookingCreate, BookingResponse, BookingUpdate
 from app.services import bookings as bookings_service

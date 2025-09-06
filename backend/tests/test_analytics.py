@@ -1,7 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import patch
-from datetime import datetime, date, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 
 from app.main import app
 from app.services.bookings import bookings_db
