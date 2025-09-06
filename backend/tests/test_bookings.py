@@ -4,7 +4,6 @@ from app.main import app
 from app.schemas.bookings import BookingStatus
 from app.services.bookings import bookings_db
 from unittest.mock import patch, AsyncMock
-from datetime import datetime
 
 client = TestClient(app)
 

@@ -1,11 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException
 from itsdangerous import URLSafeTimedSerializer
-from datetime import timedelta
 
 from app.schemas.loads import LoadCreate, LoadResponse, SwapFunds, AstraRoutineCreate
 from app.services import astra
 from app.fee_calculator import calculate_fees
-from app.crud import db_profiles, get_profile_by_laundr_id
+from app.crud import get_profile_by_laundr_id
 
 router = APIRouter()
 

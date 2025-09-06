@@ -2,7 +2,6 @@ import pytest
 from fastapi.testclient import TestClient
 from app.main import app
 from app.services.calendar import calendar_db
-from datetime import datetime
 
 client = TestClient(app)
 

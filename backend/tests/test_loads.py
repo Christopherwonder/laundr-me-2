@@ -4,7 +4,6 @@ from app.main import app
 from app.crud import db_profiles, db_settings
 from app.schemas.profile import Profile
 from app.api.loads import invite_serializer
-from itsdangerous import SignatureExpired
 
 client = TestClient(app)
 

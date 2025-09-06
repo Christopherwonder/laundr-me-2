@@ -1,15 +1,13 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Query
 from fastapi.responses import StreamingResponse
 from typing import List
 from datetime import date
 from app.schemas.analytics import (
     ActivityFeedResponse,
-    ActivityItem,
     ProjectionsResponse,
     IncomeTrendResponse,
     RevenueReportResponse,
-    RevenueByCategory,
-)
+    )
 from app.services import analytics as analytics_service
 
 router = APIRouter()

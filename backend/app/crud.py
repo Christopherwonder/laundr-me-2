@@ -1,6 +1,5 @@
 from fastapi import HTTPException
 from app.schemas.profile import Profile
-from app.schemas.settings import Settings
 from app.schemas.directory import FreelancerProfile, SearchQuery, FilterParams, SortParams
 from typing import List
 
