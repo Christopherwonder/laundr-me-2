@@ -15,7 +15,7 @@ async def get_activity_feed(user_id: str) -> List[ActivityItem]:
 
     # Process bookings from the in-memory db
     for booking_id, booking in bookings_db.items():
-        if booking.client_id == user_id or booking.freelancer_id == user_id:
+        if user_id in (booking.client_id, booking.freelancer_id):
             is_client = booking.client_id == user_id
             description = ""
             if is_client:
