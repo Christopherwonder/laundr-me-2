@@ -1,11 +1,18 @@
-from fastapi import HTTPException
-from app.schemas.profile import Profile
-from app.schemas.directory import FreelancerProfile, SearchQuery, FilterParams, SortParams
 from typing import List
+
+from app.schemas.directory import (
+    FilterParams,
+    FreelancerProfile,
+    SearchQuery,
+    SortParams,
+)
+from app.schemas.profile import Profile
+from fastapi import HTTPException
 
 # Dummy databases
 db_profiles = {}
 db_settings = {}
+
 
 async def get_profile_by_id(user_id: int) -> Profile:
     if user_id not in db_profiles:
@@ -18,6 +25,7 @@ async def get_profile_by_laundr_id(laundr_id: str):
         if profile.laundr_id == laundr_id:
             return profile
     return None
+
 
 async def search_profiles(query: SearchQuery) -> dict:
     users = []
@@ -39,6 +47,7 @@ async def search_profiles(query: SearchQuery) -> dict:
 
     return {"users": users, "freelancers": freelancers}
 
+
 async def filter_freelancers(params: FilterParams) -> List[FreelancerProfile]:
     freelancers = [p for p in db_profiles.values() if isinstance(p, FreelancerProfile)]
 
@@ -49,9 +58,12 @@ async def filter_freelancers(params: FilterParams) -> List[FreelancerProfile]:
         # This will be a future implementation.
         pass
     if params.min_rating:
-        freelancers = [f for f in freelancers if f.rating and f.rating >= params.min_rating]
+        freelancers = [
+            f for f in freelancers if f.rating and f.rating >= params.min_rating
+        ]
 
     return freelancers
+
 
 async def sort_freelancers(params: SortParams) -> List[FreelancerProfile]:
     freelancers = [p for p in db_profiles.values() if isinstance(p, FreelancerProfile)]
@@ -77,9 +89,14 @@ async def sort_freelancers(params: SortParams) -> List[FreelancerProfile]:
     if params.sort_by == "score":
         key_func = calculate_score
     elif params.sort_by == "rating":
-        key_func = lambda f: f.rating or 0
+
+        def key_func(f):
+            return f.rating or 0
+
     elif hasattr(FreelancerProfile, params.sort_by):
-        key_func = lambda f: getattr(f, params.sort_by) or 0
+
+        def key_func(f):
+            return getattr(f, params.sort_by) or 0
 
     if key_func:
         return sorted(freelancers, key=key_func, reverse=reverse)
