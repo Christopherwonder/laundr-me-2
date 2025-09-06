@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
 
 export default function KYCScreen({ onKycVerified }) {
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
 
   const handlePress = () => {
-    if (name.trim() !== '') {
+    if (name.trim() !== "") {
       onKycVerified(true);
     }
   };
@@ -34,51 +40,51 @@ export default function KYCScreen({ onKycVerified }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
-    backgroundColor: '#000000',
+    backgroundColor: "#000000",
   },
   header: {
     fontSize: 32,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
+    fontWeight: "bold",
+    color: "#FFFFFF",
     marginBottom: 10,
-    fontFamily: 'NunitoSans-Bold',
+    fontFamily: "NunitoSans-Bold",
   },
   title: {
     fontSize: 24,
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     marginBottom: 10,
-    fontFamily: 'NunitoSans-Bold',
+    fontFamily: "NunitoSans-Bold",
   },
   subtitle: {
     fontSize: 16,
-    color: '#cccccc',
-    textAlign: 'center',
+    color: "#cccccc",
+    textAlign: "center",
     marginBottom: 40,
-    fontFamily: 'NunitoSans-Regular',
+    fontFamily: "NunitoSans-Regular",
   },
   input: {
-    width: '100%',
+    width: "100%",
     height: 50,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: "#1a1a1a",
     borderRadius: 10,
     paddingHorizontal: 15,
     marginBottom: 20,
-    color: '#FFFFFF',
-    fontFamily: 'NunitoSans-Regular',
+    color: "#FFFFFF",
+    fontFamily: "NunitoSans-Regular",
     borderWidth: 1,
-    borderColor: '#333',
+    borderColor: "#333",
   },
   button: {
-    width: '100%',
+    width: "100%",
     height: 50,
-    backgroundColor: '#FF0088',
+    backgroundColor: "#FF0088",
     borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: 'rgba(255, 0, 136, 0.6)',
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "rgba(255, 0, 136, 0.6)",
     shadowOffset: {
       width: 0,
       height: 0,
@@ -88,9 +94,9 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 18,
-    fontWeight: 'bold',
-    fontFamily: 'NunitoSans-Bold',
+    fontWeight: "bold",
+    fontFamily: "NunitoSans-Bold",
   },
 });

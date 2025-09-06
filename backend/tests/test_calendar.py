@@ -1,10 +1,12 @@
-import pytest
-from fastapi.testclient import TestClient
-from app.main import app
-from app.services.calendar import calendar_db
 from datetime import datetime
 
+import pytest
+from app.main import app
+from app.services.calendar import calendar_db
+from fastapi.testclient import TestClient
+
 client = TestClient(app)
+
 
 @pytest.fixture(autouse=True)
 def setup_and_teardown():
@@ -12,6 +14,7 @@ def setup_and_teardown():
     calendar_db.clear()
     yield
     calendar_db.clear()
+
 
 # --- Test Data ---
 event_payload = {
@@ -23,6 +26,7 @@ event_payload = {
 }
 
 # --- Comprehensive Tests ---
+
 
 def test_create_and_get_event():
     """
@@ -37,6 +41,7 @@ def test_create_and_get_event():
     # Verify the event is in the database (via the service layer)
     assert event_id in calendar_db
     assert calendar_db[event_id].freelancer_id == "freelancer1"
+
 
 def test_update_event():
     """
@@ -63,6 +68,7 @@ def test_update_event():
     # Verify the update in the database
     assert calendar_db[event_id].is_available is True
 
+
 def test_delete_event():
     """
     Tests deleting an existing calendar event.
@@ -79,6 +85,7 @@ def test_delete_event():
     # Verify it's gone from the database
     assert event_id not in calendar_db
 
+
 def test_update_non_existent_event():
     """
     Tests that updating a non-existent event returns a 404 error.
@@ -90,8 +97,11 @@ def test_update_non_existent_event():
         "is_available": True,
         "id": "non-existent-id",
     }
-    response = client.put("/api/v1/calendar/events/non-existent-id", json=update_payload)
+    response = client.put(
+        "/api/v1/calendar/events/non-existent-id", json=update_payload
+    )
     assert response.status_code == 404
+
 
 def test_delete_non_existent_event():
     """

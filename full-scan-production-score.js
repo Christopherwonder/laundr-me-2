@@ -8,7 +8,10 @@ const fs = require("fs");
 const path = require("path");
 
 const reportFile = "scan-report.txt";
-fs.writeFileSync(reportFile, "=== laundr-me-2 Full Production-Ready Scan + Scoring ===\n\n");
+fs.writeFileSync(
+  reportFile,
+  "=== laundr-me-2 Full Production-Ready Scan + Scoring ===\n\n",
+);
 
 function logToReport(title, output) {
   fs.appendFileSync(reportFile, `\n--- ${title} ---\n`);
@@ -25,7 +28,7 @@ let securityIssues = 0;
 function scanPrompts(dir) {
   if (!fs.existsSync(dir)) return;
   const files = fs.readdirSync(dir);
-  files.forEach(file => {
+  files.forEach((file) => {
     const fullPath = path.join(dir, file);
     if (fs.statSync(fullPath).isDirectory()) {
       scanPrompts(fullPath);
@@ -45,7 +48,7 @@ function scanPrompts(dir) {
 function scanOrchestration(dir) {
   if (!fs.existsSync(dir)) return;
   const files = fs.readdirSync(dir);
-  files.forEach(file => {
+  files.forEach((file) => {
     const fullPath = path.join(dir, file);
     if (fs.statSync(fullPath).isDirectory()) {
       scanOrchestration(fullPath);
@@ -53,15 +56,40 @@ function scanOrchestration(dir) {
       const content = fs.readFileSync(fullPath, "utf8");
       const issues = [];
 
-      if (/while\s*\(\s*true\s*\)/.test(content)) { issues.push("Infinite loop (while true)"); safetyIssues += 5; }
-      if (/for\s*\(.*;.*;.*\)\s*{/.test(content) && content.length > 1000) { issues.push("Large for-loop"); safetyIssues += 3; }
-      if (/async function.*\{[^}]*[^try]/s.test(content)) { issues.push("Async missing try/catch"); safetyIssues += 2; }
-      if (/function\s+\w+\(.*\)\s*{[^}]*\1\(/.test(content)) { issues.push("Recursive call"); safetyIssues += 2; }
-      if (/(forEach|map|filter|reduce|for\s*\(.*;.*;.*\))/g.test(content)) { issues.push("Large data operation"); safetyIssues += 2; }
-      if (/(for|while).*{\s*(fetch|axios|XMLHttpRequest)/g.test(content)) { issues.push("Network call inside loop"); safetyIssues += 3; }
-      if (/async\s+function\s+\w+\(.*\)\s*{[^}]*[^await]\.then\(/g.test(content)) { issues.push("Async call without await"); safetyIssues += 2; }
+      if (/while\s*\(\s*true\s*\)/.test(content)) {
+        issues.push("Infinite loop (while true)");
+        safetyIssues += 5;
+      }
+      if (/for\s*\(.*;.*;.*\)\s*{/.test(content) && content.length > 1000) {
+        issues.push("Large for-loop");
+        safetyIssues += 3;
+      }
+      if (/async function.*\{[^}]*[^try]/s.test(content)) {
+        issues.push("Async missing try/catch");
+        safetyIssues += 2;
+      }
+      if (/function\s+\w+\(.*\)\s*{[^}]*\1\(/.test(content)) {
+        issues.push("Recursive call");
+        safetyIssues += 2;
+      }
+      if (/(forEach|map|filter|reduce|for\s*\(.*;.*;.*\))/g.test(content)) {
+        issues.push("Large data operation");
+        safetyIssues += 2;
+      }
+      if (/(for|while).*{\s*(fetch|axios|XMLHttpRequest)/g.test(content)) {
+        issues.push("Network call inside loop");
+        safetyIssues += 3;
+      }
+      if (
+        /async\s+function\s+\w+\(.*\)\s*{[^}]*[^await]\.then\(/g.test(content)
+      ) {
+        issues.push("Async call without await");
+        safetyIssues += 2;
+      }
 
-      if (issues.length) logToReport("Orchestration Risk: " + fullPath, issues.join("\n"));
+      if (issues.length) {
+        logToReport("Orchestration Risk: " + fullPath, issues.join("\n"));
+      }
     }
   });
 }
@@ -78,10 +106,13 @@ exec("npx eslint . --ext .js,.jsx,.ts,.tsx", (err, stdout, stderr) => {
 
   console.log("Running Prettier check...");
   exec("npx prettier --check .", (err2, stdout2, stderr2) => {
-    const prettierOutput = stdout2 || stderr2 || "All files formatted correctly";
+    const prettierOutput =
+      stdout2 || stderr2 || "All files formatted correctly";
     logToReport("Prettier Check", prettierOutput);
 
-    if (!/All files formatted correctly/.test(prettierOutput)) maintainabilityIssues += 1;
+    if (!/All files formatted correctly/.test(prettierOutput)) {
+      maintainabilityIssues += 1;
+    }
 
     console.log("Running npm audit...");
     exec("npm audit --json", (err3, stdout3, stderr3) => {
@@ -91,7 +122,10 @@ exec("npx eslint . --ext .js,.jsx,.ts,.tsx", (err, stdout, stderr) => {
         auditCount = Object.keys(auditResults.vulnerabilities || {}).length;
         logToReport("npm Audit Results", JSON.stringify(auditResults, null, 2));
       } catch {
-        logToReport("npm Audit Results", stdout3 || stderr3 || "No vulnerabilities found");
+        logToReport(
+          "npm Audit Results",
+          stdout3 || stderr3 || "No vulnerabilities found",
+        );
       }
       securityIssues += auditCount;
 
@@ -106,11 +140,19 @@ exec("npx eslint . --ext .js,.jsx,.ts,.tsx", (err, stdout, stderr) => {
         exec("bandit -r . -q -f json", (err5, stdout5, stderr5) => {
           try {
             const banditResults = JSON.parse(stdout5);
-            const banditCount = banditResults.results ? banditResults.results.length : 0;
-            logToReport("Python Bandit Security Scan", JSON.stringify(banditResults, null, 2));
+            const banditCount = banditResults.results
+              ? banditResults.results.length
+              : 0;
+            logToReport(
+              "Python Bandit Security Scan",
+              JSON.stringify(banditResults, null, 2),
+            );
             securityIssues += banditCount;
           } catch {
-            logToReport("Python Bandit Scan", stdout5 || stderr5 || "No Bandit issues found");
+            logToReport(
+              "Python Bandit Scan",
+              stdout5 || stderr5 || "No Bandit issues found",
+            );
           }
 
           console.log("Scanning AI/agent prompts...");
@@ -121,14 +163,15 @@ exec("npx eslint . --ext .js,.jsx,.ts,.tsx", (err, stdout, stderr) => {
           scanOrchestration("./orchestration");
 
           // ------------------------ SCORING ------------------------
-          const safetyScore = Math.max(0, 100 - safetyIssues*2);
-          const maintainScore = Math.max(0, 100 - maintainabilityIssues*2);
-          const securityScore = Math.max(0, 100 - securityIssues*5);
+          const safetyScore = Math.max(0, 100 - safetyIssues * 2);
+          const maintainScore = Math.max(0, 100 - maintainabilityIssues * 2);
+          const securityScore = Math.max(0, 100 - securityIssues * 5);
 
-          logToReport("SCORES", 
+          logToReport(
+            "SCORES",
             `Safety Score: ${safetyScore}/100\n` +
-            `Maintainability Score: ${maintainScore}/100\n` +
-            `Security Score: ${securityScore}/100\n`
+              `Maintainability Score: ${maintainScore}/100\n` +
+              `Security Score: ${securityScore}/100\n`,
           );
 
           console.log(`Full scan + scoring completed! See ${reportFile}`);

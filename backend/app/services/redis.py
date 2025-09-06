@@ -1,12 +1,15 @@
-import redis
 from datetime import timedelta
+
+import redis
 
 # Connect to Redis
 # In a real app, connection details should come from config
-r = redis.Redis(host='localhost', port=6379, db=0)
+r = redis.Redis(host="localhost", port=6379, db=0)
 
 
-def reserve_slot(slot_key: str, freelancer_id: str, duration: timedelta = timedelta(minutes=10)):
+def reserve_slot(
+    slot_key: str, freelancer_id: str, duration: timedelta = timedelta(minutes=10)
+):
     """
     Reserves a time slot for a freelancer for a given duration.
     Returns True if the slot was successfully reserved, False otherwise.

@@ -1,10 +1,12 @@
 You are an expert AI/ML engineer. Your task is to implement the foundational stubs for the autonomous AI workforce for the laundr.me application, specifically the Security Agents. You must adhere to the project's master specifications.
 
 **Project Monorepo Structure:**
+
 - `/agents`: This is your focus directory.
 - The scaffolding is already complete. You will be working in the `/agents` directory.
 
 **Core Requirements:**
+
 1.  **Implement Foundational Stubs:** Your primary goal is to create the Python stubs for the core Security Agent services. These services will be called by the main backend API.
 2.  **Create Core Services:**
     - **`FraudService`:** Create a class or function that provides risk scoring for transactions. For now, this can be a simple rule-based function (e.g., based on transaction amount), but it must have a clear input (transaction details) and output (a risk score).

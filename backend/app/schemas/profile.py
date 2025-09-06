@@ -1,5 +1,7 @@
+from typing import List, Optional
+
 from pydantic import BaseModel, Field
-from typing import Optional, List
+
 
 class ProfileBase(BaseModel):
     laundr_id: str = Field(..., alias="@laundrID")
@@ -7,13 +9,16 @@ class ProfileBase(BaseModel):
     headline: Optional[str] = None
     skill_tags: List[str] = []
 
+
 class ProfileCreate(ProfileBase):
     pass
+
 
 class ProfileUpdate(BaseModel):
     bio: Optional[str] = None
     headline: Optional[str] = None
     skill_tags: Optional[List[str]] = None
+
 
 class Profile(ProfileBase):
     user_id: int

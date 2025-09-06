@@ -1,7 +1,10 @@
 from .utils.logging import log_audit
 
+
 class VelocityChecker:
-    def check_transaction_velocity(self, user_id: str, transaction_details: dict) -> dict:
+    def check_transaction_velocity(
+        self, user_id: str, transaction_details: dict
+    ) -> dict:
         """
         Checks for rapid, repeated transactions.
 
@@ -17,5 +20,7 @@ class VelocityChecker:
         # Mock implementation: for now, always return False
         velocity_exceeded = False
 
-        log_audit(f"Velocity check for user {user_id} complete. Exceeded: {velocity_exceeded}")
+        log_audit(
+            f"Velocity check for user {user_id} complete. Exceeded: {velocity_exceeded}"
+        )
         return {"velocity_exceeded": velocity_exceeded}

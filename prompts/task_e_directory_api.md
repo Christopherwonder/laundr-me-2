@@ -1,6 +1,7 @@
 You are an expert backend software engineer. Your task is to implement the Directory and Marketplace API endpoints for the laundr.me application.
 
 **Core Requirements:**
+
 1.  **Implement Directory Endpoints:** In the `/backend` directory, create the following FastAPI endpoints:
     - `/search`: This endpoint must support searching for users and freelancers by name, `@laundrID`, skills, etc.
     - `/freelancers/filter`: An endpoint to filter freelancers by category, location, rating, etc.

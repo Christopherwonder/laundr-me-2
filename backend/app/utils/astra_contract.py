@@ -1,5 +1,6 @@
 from pydantic import BaseModel, ValidationError
 
+
 def validate_astra_contract(data: dict, model: BaseModel) -> bool:
     """
     Validates a data dictionary against a Pydantic model.

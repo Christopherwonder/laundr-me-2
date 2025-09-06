@@ -1,14 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException
-from app.schemas.settings import Settings, SettingsUpdate
+from app.crud import db_settings
 from app.dependencies import get_current_verified_user
 from app.schemas.profile import Profile
-from app.crud import db_settings
+from app.schemas.settings import Settings, SettingsUpdate
+from fastapi import APIRouter, Depends, HTTPException
 
 router = APIRouter()
+
 
 # Dummy audit log
 def audit_log(action: str, details: dict):
     print(f"AUDIT: {action} - {details}")
+
 
 @router.get("/{user_id}", response_model=Settings)
 async def get_settings(user_id: int):
@@ -16,6 +18,7 @@ async def get_settings(user_id: int):
         # Create default settings if none exist
         db_settings[user_id] = Settings(user_id=user_id)
     return db_settings[user_id]
+
 
 @router.put("/{user_id}", response_model=Settings)
 async def update_settings(
@@ -32,5 +35,8 @@ async def update_settings(
     for field, value in update_data.items():
         setattr(existing_settings, field, value)
 
-    audit_log("update_settings", {"user_id": user_id, "updated_fields": list(update_data.keys())})
+    audit_log(
+        "update_settings",
+        {"user_id": user_id, "updated_fields": list(update_data.keys())},
+    )
     return existing_settings

@@ -1,6 +1,6 @@
 module.exports = {
-  preset: 'react-native',
+  preset: "react-native",
   transform: {
-    '^.+\\.js$': 'babel-jest',
+    "^.+\\.js$": "babel-jest",
   },
 };
