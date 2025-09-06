@@ -1,14 +1,15 @@
-from fastapi import APIRouter, Query
-from fastapi.responses import StreamingResponse
-from typing import List
 from datetime import date
+from typing import List
+
 from app.schemas.analytics import (
     ActivityFeedResponse,
-    ProjectionsResponse,
     IncomeTrendResponse,
+    ProjectionsResponse,
     RevenueReportResponse,
-    )
+)
 from app.services import analytics as analytics_service
+from fastapi import APIRouter, Query
+from fastapi.responses import StreamingResponse
 
 router = APIRouter()
 
@@ -63,9 +64,8 @@ async def export_financial_report(user_id: str):
     Generates and returns a CSV file of the user's financial history.
     """
     csv_file = await analytics_service.generate_financial_report_csv(user_id)
-    response = StreamingResponse(
-        iter([csv_file.getvalue()]),
-        media_type="text/csv"
+    response = StreamingResponse(iter([csv_file.getvalue()]), media_type="text/csv")
+    response.headers["Content-Disposition"] = (
+        "attachment; filename=financial_report.csv"
     )
-    response.headers["Content-Disposition"] = "attachment; filename=financial_report.csv"
     return response

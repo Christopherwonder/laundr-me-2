@@ -1,11 +1,11 @@
-import pytest
-from fastapi.testclient import TestClient
 from datetime import datetime, timedelta, timezone
 
+import pytest
 from app.main import app
-from app.services.bookings import bookings_db
-from app.services.astra import transactions_db
 from app.schemas.bookings import BookingResponse, BookingStatus
+from app.services.astra import transactions_db
+from app.services.bookings import bookings_db
+from fastapi.testclient import TestClient
 
 client = TestClient(app)
 
@@ -14,6 +14,7 @@ client = TestClient(app)
 USER_ID = "user1"
 FREELANCER_ID = "freelancer1"
 CLIENT_ID = "client1"
+
 
 def setup_test_data():
     """Clear and repopulate the dummy databases with a consistent dataset."""
@@ -55,28 +56,46 @@ def setup_test_data():
     )
 
     # Received load (income)
-    transactions_db.append({
-        "action": "send_load",
-        "details": {"transaction_id": "tx1", "sender_id": "other_user", "recipient_id": USER_ID, "amount": 75.0},
-        "timestamp": datetime(2023, 7, 5, 12, 0, 0),
-        "status": "completed"
-    })
+    transactions_db.append(
+        {
+            "action": "send_load",
+            "details": {
+                "transaction_id": "tx1",
+                "sender_id": "other_user",
+                "recipient_id": USER_ID,
+                "amount": 75.0,
+            },
+            "timestamp": datetime(2023, 7, 5, 12, 0, 0),
+            "status": "completed",
+        }
+    )
     # Sent load (expense)
-    transactions_db.append({
-        "action": "send_load",
-        "details": {"transaction_id": "tx2", "sender_id": USER_ID, "recipient_id": "other_user", "amount": 50.0},
-        "timestamp": datetime(2023, 7, 6, 12, 0, 0),
-        "status": "completed"
-    })
+    transactions_db.append(
+        {
+            "action": "send_load",
+            "details": {
+                "transaction_id": "tx2",
+                "sender_id": USER_ID,
+                "recipient_id": "other_user",
+                "amount": 50.0,
+            },
+            "timestamp": datetime(2023, 7, 6, 12, 0, 0),
+            "status": "completed",
+        }
+    )
+
 
 # --- Pytest Fixture ---
+
 
 @pytest.fixture(autouse=True)
 def setup():
     """Setup test data before each test."""
     setup_test_data()
 
+
 # --- Test Cases ---
+
 
 def test_get_activity_feed():
     """
@@ -87,8 +106,8 @@ def test_get_activity_feed():
     data = response.json()
     items = data["items"]
 
-    assert len(items) == 3 # booking3, tx1, tx2
-    assert items[0]["id"] == "tx2" # Most recent
+    assert len(items) == 3  # booking3, tx1, tx2
+    assert items[0]["id"] == "tx2"  # Most recent
     assert items[1]["id"] == "tx1"
     assert items[2]["id"] == "booking3"
     assert items[0]["description"] == "Sent load to other_user"
@@ -112,7 +131,9 @@ def test_get_income_trend():
     """
     start_date = "2023-07-01"
     end_date = "2023-07-31"
-    response = client.get(f"/api/v1/analytics/income-trend/{USER_ID}?start_date={start_date}&end_date={end_date}")
+    response = client.get(
+        f"/api/v1/analytics/income-trend/{USER_ID}?start_date={start_date}&end_date={end_date}"
+    )
     assert response.status_code == 200
     data = response.json()["trend"]
 
@@ -138,7 +159,9 @@ def test_get_revenue_report():
     """
     Tests the revenue report generation for a freelancer, broken down by client.
     """
-    response = client.get(f"/api/v1/analytics/revenue-report/{FREELANCER_ID}?breakdown_by=client")
+    response = client.get(
+        f"/api/v1/analytics/revenue-report/{FREELANCER_ID}?breakdown_by=client"
+    )
     assert response.status_code == 200
     data = response.json()
 
@@ -147,7 +170,7 @@ def test_get_revenue_report():
     assert len(data["data"]) == 2
 
     # Sort by category to ensure consistent order for assertions
-    sorted_data = sorted(data["data"], key=lambda x: x['category'])
+    sorted_data = sorted(data["data"], key=lambda x: x["category"])
 
     assert sorted_data[0]["category"] == CLIENT_ID
     assert sorted_data[0]["total_revenue"] == 150.0
@@ -164,8 +187,11 @@ def test_financial_report_csv_export():
     """
     response = client.get(f"/api/v1/analytics/export/financial-report/{USER_ID}")
     assert response.status_code == 200
-    assert "text/csv" in response.headers["content-type"] # More robust check
-    assert "attachment; filename=financial_report.csv" in response.headers["content-disposition"]
+    assert "text/csv" in response.headers["content-type"]  # More robust check
+    assert (
+        "attachment; filename=financial_report.csv"
+        in response.headers["content-disposition"]
+    )
 
     content = response.text
     # Basic check for header and some expected content
