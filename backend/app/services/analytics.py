@@ -1,12 +1,11 @@
-import io
 import csv
 import io
-import csv
+from datetime import date, datetime, timedelta, timezone
 from typing import List
-from datetime import datetime, date, timedelta, timezone
+
 from app.schemas.analytics import ActivityItem, ActivityType
-from app.services.bookings import bookings_db
 from app.services.astra import transactions_db
+from app.services.bookings import bookings_db
 
 
 async def get_activity_feed(user_id: str) -> List[ActivityItem]:
@@ -25,59 +24,63 @@ async def get_activity_feed(user_id: str) -> List[ActivityItem]:
             else:
                 description = f"Booking by {booking.client_id}"
 
-            activities.append(ActivityItem(
-                id=booking.id,
-                type=ActivityType.BOOKING,
-                timestamp=booking.start_time,
-                description=description,
-                amount=booking.price,
-                status=booking.status.value,
-            ))
+            activities.append(
+                ActivityItem(
+                    id=booking.id,
+                    type=ActivityType.BOOKING,
+                    timestamp=booking.start_time,
+                    description=description,
+                    amount=booking.price,
+                    status=booking.status.value,
+                )
+            )
 
     # Process transactions from the in-memory db
     for tx in transactions_db:
-        details = tx['details']
-        action = tx['action']
+        details = tx["details"]
+        action = tx["action"]
         activity_type = None
         description = ""
         user_is_involved = False
 
-        if action == 'send_load':
+        if action == "send_load":
             activity_type = ActivityType.LOAD
-            if details.get('sender_id') == user_id:
+            if details.get("sender_id") == user_id:
                 user_is_involved = True
                 description = f"Sent load to {details.get('recipient_id')}"
-            elif details.get('recipient_id') == user_id:
+            elif details.get("recipient_id") == user_id:
                 user_is_involved = True
                 description = f"Received load from {details.get('sender_id')}"
 
-        elif action == 'request_load':
+        elif action == "request_load":
             activity_type = ActivityType.REQUEST
-            if details.get('requester_id') == user_id:
-                 user_is_involved = True
-                 description = f"Requested load from {details.get('sender_id')}"
-            elif details.get('sender_id') == user_id:
-                 user_is_involved = True
-                 description = f"Load requested by {details.get('requester_id')}"
+            if details.get("requester_id") == user_id:
+                user_is_involved = True
+                description = f"Requested load from {details.get('sender_id')}"
+            elif details.get("sender_id") == user_id:
+                user_is_involved = True
+                description = f"Load requested by {details.get('requester_id')}"
 
-        elif action == 'swap_funds':
+        elif action == "swap_funds":
             activity_type = ActivityType.SWAP
-            if details.get('source_id') == user_id:
+            if details.get("source_id") == user_id:
                 user_is_involved = True
                 description = f"Swapped funds to {details.get('destination_id')}"
-            elif details.get('destination_id') == user_id:
+            elif details.get("destination_id") == user_id:
                 user_is_involved = True
                 description = f"Received swapped funds from {details.get('source_id')}"
 
         if user_is_involved:
-            activities.append(ActivityItem(
-                id=details.get('transaction_id'),
-                type=activity_type,
-                timestamp=tx['timestamp'],
-                description=description,
-                amount=details.get('amount'),
-                status=tx.get('status'),
-            ))
+            activities.append(
+                ActivityItem(
+                    id=details.get("transaction_id"),
+                    type=activity_type,
+                    timestamp=tx["timestamp"],
+                    description=description,
+                    amount=details.get("amount"),
+                    status=tx.get("status"),
+                )
+            )
 
     # Sort activities by timestamp in reverse chronological order
     activities.sort(key=lambda x: x.timestamp, reverse=True)
@@ -97,7 +100,10 @@ async def get_revenue_projections(user_id: str):
         # Projections are for freelancers receiving payment
         if booking.freelancer_id == user_id:
             # Convert booking start_time to offset-aware by assuming UTC
-            if booking.status == "confirmed" and booking.start_time.replace(tzinfo=timezone.utc) > now:
+            if (
+                booking.status == "confirmed"
+                and booking.start_time.replace(tzinfo=timezone.utc) > now
+            ):
                 projected_revenue += booking.price
                 booking_count += 1
 
@@ -127,35 +133,37 @@ async def get_income_trend(user_id: str, start_date: date, end_date: date):
 
     # Process transactions
     for tx in transactions_db:
-        tx_date = tx['timestamp'].date()
-        if start_date <= tx_date <= end_date and tx['status'] == "completed":
-            details = tx['details']
-            action = tx['action']
-            amount = details.get('amount', 0.0)
+        tx_date = tx["timestamp"].date()
+        if start_date <= tx_date <= end_date and tx["status"] == "completed":
+            details = tx["details"]
+            action = tx["action"]
+            amount = details.get("amount", 0.0)
 
-            if action == 'send_load' and details.get('sender_id') == user_id:
+            if action == "send_load" and details.get("sender_id") == user_id:
                 trend_data[tx_date]["expenses"] += amount
-            elif action == 'send_load' and details.get('recipient_id') == user_id:
-                 trend_data[tx_date]["income"] += amount
+            elif action == "send_load" and details.get("recipient_id") == user_id:
+                trend_data[tx_date]["income"] += amount
 
             # For swaps, we assume the user's perspective
-            elif action == 'swap_funds' and details.get('source_id') == user_id:
+            elif action == "swap_funds" and details.get("source_id") == user_id:
                 trend_data[tx_date]["expenses"] += amount
-            elif action == 'swap_funds' and details.get('destination_id') == user_id:
+            elif action == "swap_funds" and details.get("destination_id") == user_id:
                 trend_data[tx_date]["income"] += amount
 
     # Format for response
     response_trend = []
     for day, data in trend_data.items():
-        net_income = data['income'] - data['expenses']
-        response_trend.append({
-            "date": day,
-            "income": data['income'],
-            "expenses": data['expenses'],
-            "net_income": net_income
-        })
+        net_income = data["income"] - data["expenses"]
+        response_trend.append(
+            {
+                "date": day,
+                "income": data["income"],
+                "expenses": data["expenses"],
+                "net_income": net_income,
+            }
+        )
 
-    return sorted(response_trend, key=lambda x: x['date'])
+    return sorted(response_trend, key=lambda x: x["date"])
 
 
 async def get_revenue_report(user_id: str, breakdown_by: str):
@@ -166,32 +174,48 @@ async def get_revenue_report(user_id: str, breakdown_by: str):
     now = datetime.now(timezone.utc)
 
     # Only freelancers receive revenue from bookings
-    if breakdown_by == 'service':
+    if breakdown_by == "service":
         for booking_id, booking in bookings_db.items():
-            if booking.freelancer_id == user_id and booking.status == "confirmed" and booking.start_time.replace(tzinfo=timezone.utc) < now:
+            if (
+                booking.freelancer_id == user_id
+                and booking.status == "confirmed"
+                and booking.start_time.replace(tzinfo=timezone.utc) < now
+            ):
                 service = booking.service
                 if service not in revenue_data:
-                    revenue_data[service] = {"total_revenue": 0.0, "transaction_count": 0}
+                    revenue_data[service] = {
+                        "total_revenue": 0.0,
+                        "transaction_count": 0,
+                    }
                 revenue_data[service]["total_revenue"] += booking.price
                 revenue_data[service]["transaction_count"] += 1
 
-    elif breakdown_by == 'client':
+    elif breakdown_by == "client":
         for booking_id, booking in bookings_db.items():
-            if booking.freelancer_id == user_id and booking.status == "confirmed" and booking.start_time.replace(tzinfo=timezone.utc) < now:
+            if (
+                booking.freelancer_id == user_id
+                and booking.status == "confirmed"
+                and booking.start_time.replace(tzinfo=timezone.utc) < now
+            ):
                 client = booking.client_id
                 if client not in revenue_data:
-                    revenue_data[client] = {"total_revenue": 0.0, "transaction_count": 0}
+                    revenue_data[client] = {
+                        "total_revenue": 0.0,
+                        "transaction_count": 0,
+                    }
                 revenue_data[client]["total_revenue"] += booking.price
                 revenue_data[client]["transaction_count"] += 1
 
     # Format for response
     response_report = []
     for category, data in revenue_data.items():
-        response_report.append({
-            "category": category,
-            "total_revenue": data['total_revenue'],
-            "transaction_count": data['transaction_count']
-        })
+        response_report.append(
+            {
+                "category": category,
+                "total_revenue": data["total_revenue"],
+                "transaction_count": data["transaction_count"],
+            }
+        )
 
     return response_report
 
@@ -204,7 +228,7 @@ async def generate_financial_report_csv(user_id: str):
     writer = csv.writer(output)
 
     # Write header
-    writer.writerow(['Date', 'Description', 'Income', 'Expense', 'Category'])
+    writer.writerow(["Date", "Description", "Income", "Expense", "Category"])
 
     # Process bookings
     for booking_id, booking in bookings_db.items():
@@ -212,65 +236,65 @@ async def generate_financial_report_csv(user_id: str):
             row = None
             if booking.freelancer_id == user_id:
                 row = [
-                    booking.start_time.strftime('%Y-%m-%d'),
+                    booking.start_time.strftime("%Y-%m-%d"),
                     f"Payment for '{booking.service}' from {booking.client_id}",
                     booking.price,
                     "",
-                    "Booking Revenue"
+                    "Booking Revenue",
                 ]
             elif booking.client_id == user_id:
                 row = [
-                    booking.start_time.strftime('%Y-%m-%d'),
+                    booking.start_time.strftime("%Y-%m-%d"),
                     f"Payment for '{booking.service}' to {booking.freelancer_id}",
                     "",
                     booking.price,
-                    "Service Expense"
+                    "Service Expense",
                 ]
             if row:
                 writer.writerow(row)
 
     # Process transactions
     for tx in transactions_db:
-        if tx['status'] == "completed":
-            details = tx['details']
-            action = tx['action']
-            amount = details.get('amount', 0.0)
+        if tx["status"] == "completed":
+            details = tx["details"]
+            action = tx["action"]
+            amount = details.get("amount", 0.0)
             row = None
 
-            if action == 'send_load':
-                if details.get('sender_id') == user_id:
+            if action == "send_load":
+                if details.get("sender_id") == user_id:
                     row = [
-                        tx['timestamp'].strftime('%Y-%m-%d'),
+                        tx["timestamp"].strftime("%Y-%m-%d"),
                         f"Load sent to {details.get('recipient_id')}",
                         "",
                         amount,
-                        "Funds Transfer Out"
+                        "Funds Transfer Out",
                     ]
-                elif details.get('recipient_id') == user_id:
+                elif details.get("recipient_id") == user_id:
                     row = [
-                        tx['timestamp'].strftime('%Y-%m-%d'),
+                        tx["timestamp"].strftime("%Y-%m-%d"),
                         f"Load received from {details.get('sender_id')}",
                         amount,
                         "",
-                        "Funds Transfer In"
+                        "Funds Transfer In",
                     ]
 
-            elif action == 'swap_funds':
-                 if details.get('source_id') == user_id:
+            elif action == "swap_funds":
+                if details.get("source_id") == user_id:
                     row = [
-                        tx['timestamp'].strftime('%Y-%m-%d'),
+                        tx["timestamp"].strftime("%Y-%m-%d"),
                         f"Funds swapped to {details.get('destination_id')}",
                         "",
                         amount,
-                        "Swap Out"
+                        "Swap Out",
                     ]
-                 elif details.get('destination_id') == user_id:
+                elif details.get("destination_id") == user_id:
                     row = [
-                        tx['timestamp'].strftime('%Y-%m-%d'),
+                        tx["timestamp"].strftime("%Y-%m-%d"),
                         f"Funds swapped from {details.get('source_id')}",
                         amount,
                         "",
-                        "Swap In"
+                        "Swap In",
                     ]
 
             if row:

@@ -1,7 +1,8 @@
-from fastapi import APIRouter, HTTPException
-from app.schemas.bookings import CalendarEvent, Availability
-from app.services import calendar as calendar_service
 from typing import List
+
+from app.schemas.bookings import Availability, CalendarEvent
+from app.services import calendar as calendar_service
+from fastapi import APIRouter, HTTPException
 
 router = APIRouter()
 

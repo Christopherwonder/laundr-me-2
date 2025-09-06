@@ -1,7 +1,13 @@
-from app.schemas.bookings import BookingCreate, BookingResponse, BookingUpdate, BookingStatus
-from app.api.loads import send_load
-from app.schemas.loads import LoadCreate
 import uuid
+
+from app.api.loads import send_load
+from app.schemas.bookings import (
+    BookingCreate,
+    BookingResponse,
+    BookingStatus,
+    BookingUpdate,
+)
+from app.schemas.loads import LoadCreate
 
 # In-memory database for demonstration purposes
 bookings_db = {}
@@ -16,9 +22,7 @@ async def create_booking(booking: BookingCreate) -> BookingResponse:
     """Creates a new booking and reserves the time slot."""
     booking_id = str(uuid.uuid4())
     new_booking = BookingResponse(
-        id=booking_id,
-        status=BookingStatus.PENDING,
-        **booking.model_dump()
+        id=booking_id, status=BookingStatus.PENDING, **booking.model_dump()
     )
     bookings_db[booking_id] = new_booking
     audit_log("booking_created", {"booking_id": booking_id})
@@ -35,7 +39,7 @@ async def approve_booking(booking_id: str) -> BookingResponse:
     deposit_load = LoadCreate(
         sender_id=booking.client_id,
         recipient_id=booking.freelancer_id,
-        amount=booking.price * 0.2  # 20% deposit
+        amount=booking.price * 0.2,  # 20% deposit
     )
     await send_load(deposit_load)
 
@@ -54,7 +58,9 @@ async def decline_booking(booking_id: str) -> BookingResponse:
     return booking
 
 
-async def counter_booking(booking_id: str, booking_update: BookingUpdate) -> BookingResponse:
+async def counter_booking(
+    booking_id: str, booking_update: BookingUpdate
+) -> BookingResponse:
     """Counters a booking with new terms."""
     booking = bookings_db.get(booking_id)
     if not booking:
@@ -69,7 +75,10 @@ async def counter_booking(booking_id: str, booking_update: BookingUpdate) -> Boo
         booking.price = booking_update.price
 
     booking.status = BookingStatus.COUNTERED
-    audit_log("booking_countered", {"booking_id": booking_id, "update": booking_update.model_dump()})
+    audit_log(
+        "booking_countered",
+        {"booking_id": booking_id, "update": booking_update.model_dump()},
+    )
     return booking
 
 

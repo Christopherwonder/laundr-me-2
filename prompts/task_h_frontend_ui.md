@@ -3,6 +3,7 @@ You are an expert frontend software engineer. Your task is to implement the comp
 **Context:** All backend APIs are now complete and documented. The frontend project has been initialized in `/frontend` with React Native (Expo) and Tailwind CSS.
 
 **Core Requirements:**
+
 1.  **Implement All 5 Tabs:** Build the UI for the 5 primary tabs using React Native and Tailwind CSS: Loads, Directory, Bookings, Activity, Profile.
 2.  **Adhere to Branding:**
     - **Typography:** Use Nunito Sans exclusively.

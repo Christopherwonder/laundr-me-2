@@ -3,6 +3,7 @@ You are an expert backend software engineer. Your task is to implement the booki
 **Context:** The core financial "Loads" API (Task D) is complete.
 
 **Core Requirements:**
+
 1.  **Implement Booking System API:** In `/backend`, create endpoints for:
     - Freelancer calendar availability (`/calendar/availability`).
     - Creating specific and generic booking requests.

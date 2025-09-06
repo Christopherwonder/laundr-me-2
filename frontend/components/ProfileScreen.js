@@ -1,20 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 
-const API_URL = 'http://localhost:8000';
+const API_URL = "http://localhost:8000";
 
 const fetchProfile = async (userId) => {
   console.log(`Mock fetching profile for userId: ${userId}`);
   // Simulate a network request delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 
   // Return a mock success response
   return {
-    first_name: 'John',
-    last_name: 'Doe',
-    laundr_id: 'johndoe',
-    email: 'john.doe@example.com',
-    kyc_status: 'Verified',
+    first_name: "John",
+    last_name: "Doe",
+    laundr_id: "johndoe",
+    email: "john.doe@example.com",
+    kyc_status: "Verified",
   };
 };
 
@@ -59,7 +65,9 @@ export default function ProfileScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.avatar} />
-        <Text style={styles.name}>{profileData?.first_name} {profileData?.last_name}</Text>
+        <Text style={styles.name}>
+          {profileData?.first_name} {profileData?.last_name}
+        </Text>
         <Text style={styles.laundrId}>@{profileData?.laundr_id}</Text>
       </View>
 
@@ -86,72 +94,72 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#000000',
+    backgroundColor: "#000000",
   },
   centered: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#000000',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#000000",
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 30,
   },
   avatar: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: '#333',
+    backgroundColor: "#333",
     marginBottom: 15,
   },
   name: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    fontFamily: 'NunitoSans-Bold',
+    fontWeight: "bold",
+    color: "#FFFFFF",
+    fontFamily: "NunitoSans-Bold",
   },
   laundrId: {
     fontSize: 16,
-    color: '#cccccc',
-    fontFamily: 'NunitoSans-Regular',
+    color: "#cccccc",
+    fontFamily: "NunitoSans-Regular",
   },
   card: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: "#1a1a1a",
     borderRadius: 10,
     padding: 20,
     marginBottom: 30,
   },
   cardTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
+    fontWeight: "bold",
+    color: "#FFFFFF",
     marginBottom: 15,
-    fontFamily: 'NunitoSans-Bold',
+    fontFamily: "NunitoSans-Bold",
   },
   infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 10,
   },
   label: {
     fontSize: 16,
-    color: '#cccccc',
-    fontFamily: 'NunitoSans-Regular',
+    color: "#cccccc",
+    fontFamily: "NunitoSans-Regular",
   },
   value: {
     fontSize: 16,
-    color: '#FFFFFF',
-    fontFamily: 'NunitoSans-Bold',
+    color: "#FFFFFF",
+    fontFamily: "NunitoSans-Bold",
   },
   button: {
-    width: '100%',
+    width: "100%",
     height: 50,
-    backgroundColor: '#FF0088',
+    backgroundColor: "#FF0088",
     borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: 'rgba(255, 0, 136, 0.6)',
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "rgba(255, 0, 136, 0.6)",
     shadowOffset: {
       width: 0,
       height: 0,
@@ -161,14 +169,14 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 18,
-    fontWeight: 'bold',
-    fontFamily: 'NunitoSans-Bold',
+    fontWeight: "bold",
+    fontFamily: "NunitoSans-Bold",
   },
   errorText: {
-    color: '#F44336',
+    color: "#F44336",
     fontSize: 16,
-    fontFamily: 'NunitoSans-Regular',
+    fontFamily: "NunitoSans-Regular",
   },
 });

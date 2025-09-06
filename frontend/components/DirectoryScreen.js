@@ -1,20 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 
-const API_URL = 'http://localhost:8000';
+const API_URL = "http://localhost:8000";
 
-const searchDirectory = async (query = '') => {
+const searchDirectory = async (query = "") => {
   console.log(`Mock searching directory with query: ${query}`);
   // Simulate a network request delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 
   // Return a mock success response
   return {
     profiles: [
-      { laundr_id: 'user_1', name: 'Alice Johnson', specialty: 'Graphic Designer' },
-      { laundr_id: 'user_2', name: 'Bob Williams', specialty: 'Web Developer' },
-      { laundr_id: 'user_3', name: 'Charlie Brown', specialty: 'Data Scientist' },
-      { laundr_id: 'user_4', name: 'Diana Prince', specialty: 'Marketing Expert' },
+      {
+        laundr_id: "user_1",
+        name: "Alice Johnson",
+        specialty: "Graphic Designer",
+      },
+      { laundr_id: "user_2", name: "Bob Williams", specialty: "Web Developer" },
+      {
+        laundr_id: "user_3",
+        name: "Charlie Brown",
+        specialty: "Data Scientist",
+      },
+      {
+        laundr_id: "user_4",
+        name: "Diana Prince",
+        specialty: "Marketing Expert",
+      },
     ],
   };
 };
@@ -81,25 +99,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#000000',
+    backgroundColor: "#000000",
   },
   centered: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#000000',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#000000",
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
+    fontWeight: "bold",
+    color: "#FFFFFF",
     marginBottom: 20,
-    fontFamily: 'NunitoSans-Bold',
+    fontFamily: "NunitoSans-Bold",
   },
   itemContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#1a1a1a',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#1a1a1a",
     padding: 15,
     borderRadius: 10,
     marginBottom: 10,
@@ -108,7 +126,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: '#333',
+    backgroundColor: "#333",
     marginRight: 15,
   },
   itemTextContainer: {
@@ -116,17 +134,17 @@ const styles = StyleSheet.create({
   },
   itemName: {
     fontSize: 18,
-    color: '#FFFFFF',
-    fontFamily: 'NunitoSans-Bold',
+    color: "#FFFFFF",
+    fontFamily: "NunitoSans-Bold",
   },
   itemRole: {
     fontSize: 14,
-    color: '#cccccc',
-    fontFamily: 'NunitoSans-Regular',
+    color: "#cccccc",
+    fontFamily: "NunitoSans-Regular",
   },
   errorText: {
-    color: '#F44336',
+    color: "#F44336",
     fontSize: 16,
-    fontFamily: 'NunitoSans-Regular',
+    fontFamily: "NunitoSans-Regular",
   },
 });

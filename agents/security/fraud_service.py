@@ -1,5 +1,6 @@
 from .utils.logging import log_audit
 
+
 class FraudService:
     def get_risk_score(self, transaction_details: dict) -> dict:
         """

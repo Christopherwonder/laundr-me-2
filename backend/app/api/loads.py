@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
-from itsdangerous import URLSafeTimedSerializer
 from datetime import timedelta
 
-from app.schemas.loads import LoadCreate, LoadResponse, SwapFunds, AstraRoutineCreate
-from app.services import astra
-from app.fee_calculator import calculate_fees
 from app.crud import db_profiles, get_profile_by_laundr_id
+from app.fee_calculator import calculate_fees
+from app.schemas.loads import AstraRoutineCreate, LoadCreate, LoadResponse, SwapFunds
+from app.services import astra
+from fastapi import APIRouter, Depends, HTTPException
+from itsdangerous import URLSafeTimedSerializer
 
 router = APIRouter()
 
@@ -24,7 +24,9 @@ async def send_load(load: LoadCreate):
     # 1. Check if sender exists
     sender_profile = await get_profile_by_laundr_id(load.sender_id)
     if not sender_profile:
-        raise HTTPException(status_code=404, detail=f"Sender with laundr_id {load.sender_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Sender with laundr_id {load.sender_id} not found"
+        )
 
     # 2. Calculate fees
     total_fee, sender_fee, recipient_fee = calculate_fees(load.amount)
@@ -46,7 +48,7 @@ async def send_load(load: LoadCreate):
         type="send",
         amount=load.amount,
         source_id=load.sender_id,
-        destination_id=load.recipient_id
+        destination_id=load.recipient_id,
     )
     routine = await astra.create_routine(astra_routine_data)
 
@@ -74,6 +76,7 @@ async def send_load(load: LoadCreate):
         invite_link=invite_link,
     )
 
+
 @router.post("/request-load", response_model=LoadResponse)
 async def request_load(load: LoadCreate):
     # In a request, the sender is the one being asked for money,
@@ -82,11 +85,16 @@ async def request_load(load: LoadCreate):
     # 1. Check if both users exist on the platform
     sender_profile = await get_profile_by_laundr_id(load.sender_id)
     if not sender_profile:
-        raise HTTPException(status_code=404, detail=f"Sender with laundr_id {load.sender_id} not found")
+        raise HTTPException(
+            status_code=404, detail=f"Sender with laundr_id {load.sender_id} not found"
+        )
 
     recipient_profile = await get_profile_by_laundr_id(load.recipient_id)
     if not recipient_profile:
-        raise HTTPException(status_code=404, detail=f"Recipient with laundr_id {load.recipient_id} not found")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Recipient with laundr_id {load.recipient_id} not found",
+        )
 
     # 2. Calculate fees
     total_fee, sender_fee, recipient_fee = calculate_fees(load.amount)
@@ -96,8 +104,8 @@ async def request_load(load: LoadCreate):
     astra_routine_data = AstraRoutineCreate(
         type="request",
         amount=load.amount,
-        source_id=load.sender_id, # The person who will send the money
-        destination_id=load.recipient_id # The person who will receive the money
+        source_id=load.sender_id,  # The person who will send the money
+        destination_id=load.recipient_id,  # The person who will receive the money
     )
     routine = await astra.create_routine(astra_routine_data)
 
@@ -124,16 +132,23 @@ async def request_load(load: LoadCreate):
         message="Load request created successfully. The sender has been notified.",
     )
 
+
 @router.post("/swap-funds", response_model=LoadResponse)
 async def swap_funds(swap: SwapFunds):
     # 1. Check if both users exist on the platform
     source_profile = await get_profile_by_laundr_id(swap.source_id)
     if not source_profile:
-        raise HTTPException(status_code=404, detail=f"Source profile with laundr_id {swap.source_id} not found")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Source profile with laundr_id {swap.source_id} not found",
+        )
 
     destination_profile = await get_profile_by_laundr_id(swap.destination_id)
     if not destination_profile:
-        raise HTTPException(status_code=404, detail=f"Destination profile with laundr_id {swap.destination_id} not found")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Destination profile with laundr_id {swap.destination_id} not found",
+        )
 
     # 2. Calculate fees
     total_fee, sender_fee, recipient_fee = calculate_fees(swap.amount)
@@ -144,7 +159,7 @@ async def swap_funds(swap: SwapFunds):
         type="swap",
         amount=swap.amount,
         source_id=swap.source_id,
-        destination_id=swap.destination_id
+        destination_id=swap.destination_id,
     )
     routine = await astra.create_routine(astra_routine_data)
 

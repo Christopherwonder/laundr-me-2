@@ -1,6 +1,7 @@
 You are an expert backend software engineer. Your task is to implement the Activity feed and analytics dashboard API for the laundr.me application.
 
 **Core Requirements:**
+
 1.  **Implement Activity Feed:** Create an endpoint that provides a reverse-chronological list of all user transactions (Loads, Swaps) and booking events.
 2.  **Implement Analytics Endpoints:** Create endpoints to provide aggregated data for the analytics dashboard, including:
     - Revenue broken down by client or service type.

@@ -1,5 +1,6 @@
 import datetime
 
+
 def log_audit(message: str):
     """
     Logs an audit message to the console with a timestamp.

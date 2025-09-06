@@ -1,5 +1,7 @@
-from pydantic import BaseModel, Field
 from typing import Optional, Union
+
+from pydantic import BaseModel, Field
+
 
 # Schemas for Astra Routines
 class AstraRoutineCreate(BaseModel):
@@ -8,9 +10,11 @@ class AstraRoutineCreate(BaseModel):
     source_id: str
     destination_id: str
 
+
 class AstraRoutine(BaseModel):
     id: str
     status: str
+
 
 # Schemas for Loads API
 class LoadCreate(BaseModel):
@@ -18,10 +22,12 @@ class LoadCreate(BaseModel):
     sender_id: str
     recipient_id: str
 
+
 class SwapFunds(BaseModel):
     amount: float = Field(..., gt=0, description="The amount to swap.")
     source_id: str
     destination_id: str
+
 
 class LoadResponse(BaseModel):
     transaction_id: str

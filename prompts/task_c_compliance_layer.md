@@ -3,6 +3,7 @@ You are an expert backend software engineer specializing in compliance and syste
 **Context:** The user profile/KYC endpoints (Task A) and the AI Security Agent stubs (Task B) are complete. Your job is to integrate them.
 
 **Core Requirements:**
+
 1.  **Implement Compliance Middleware:** In the `/backend` directory, create a FastAPI middleware layer. This middleware must intercept all incoming financial transaction requests.
 2.  **Perform Real-Time Checks:** Inside the middleware, you must:
     - Verify the user's KYC status by checking the data stored from the Task A workflow.

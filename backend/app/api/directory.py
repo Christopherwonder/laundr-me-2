@@ -1,24 +1,27 @@
-from fastapi import APIRouter, Depends
 from typing import List
 
+from app.crud import filter_freelancers, search_profiles, sort_freelancers
 from app.schemas.directory import (
-    FreelancerProfile,
-    SearchResult,
-    SearchQuery,
     FilterParams,
+    FreelancerProfile,
+    SearchQuery,
+    SearchResult,
     SortParams,
 )
-from app.crud import search_profiles, filter_freelancers, sort_freelancers
+from fastapi import APIRouter, Depends
 
 router = APIRouter()
+
 
 @router.post("/search", response_model=SearchResult)
 async def search(query: SearchQuery):
     return await search_profiles(query)
 
+
 @router.post("/freelancers/filter", response_model=List[FreelancerProfile])
 async def filter_freelancers_endpoint(params: FilterParams):
     return await filter_freelancers(params)
+
 
 @router.post("/freelancers/sort", response_model=List[FreelancerProfile])
 async def sort_freelancers_endpoint(params: SortParams):

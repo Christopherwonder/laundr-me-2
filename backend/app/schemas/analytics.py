@@ -1,7 +1,8 @@
-from pydantic import BaseModel
-from datetime import datetime, date
-from typing import List
+from datetime import date, datetime
 from enum import Enum
+from typing import List
+
+from pydantic import BaseModel
 
 
 class ActivityType(str, Enum):
@@ -25,6 +26,7 @@ class ActivityFeedResponse(BaseModel):
 
 
 # Schemas for Analytics Endpoints
+
 
 class RevenueByCategory(BaseModel):
     category: str

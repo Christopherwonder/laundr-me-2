@@ -1,5 +1,6 @@
 from .utils.logging import log_audit
 
+
 class AnomalyDetector:
     def detect_anomalies(self, user_actions: list) -> dict:
         """
