@@ -1,6 +1,7 @@
-from pydantic import BaseModel
-from typing import Optional, List
+from typing import List, Optional
+
 from app.schemas.profile import Profile
+from pydantic import BaseModel
 
 
 class FreelancerProfile(Profile):

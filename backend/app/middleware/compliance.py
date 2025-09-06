@@ -1,17 +1,19 @@
+import json
+
+from app.crud import get_profile_by_laundr_id
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
-import json
 
 from agents.security.fraud_service import FraudService
 from agents.security.velocity_checker import VelocityChecker
-from app.crud import get_profile_by_laundr_id
 
 FINANCIAL_PATHS = [
     "/api/v1/loads/send-load",
     "/api/v1/loads/request-load",
     "/api/v1/loads/swap-funds",
 ]
+
 
 class ComplianceMiddleware(BaseHTTPMiddleware):
     def __init__(self, app):
@@ -24,7 +26,9 @@ class ComplianceMiddleware(BaseHTTPMiddleware):
             body = await request.body()
             transaction_details = json.loads(body) if body else {}
 
-            sender_id = transaction_details.get("sender_id") or transaction_details.get("source_id")
+            sender_id = transaction_details.get("sender_id") or transaction_details.get(
+                "source_id"
+            )
 
             if not sender_id:
                 # If we can't identify the user, we can't perform checks.
@@ -39,16 +43,24 @@ class ComplianceMiddleware(BaseHTTPMiddleware):
                 return await call_next(request)
 
             if profile.kyc_status != "verified":
-                return JSONResponse(status_code=403, content={"detail": "KYC not verified"})
+                return JSONResponse(
+                    status_code=403, content={"detail": "KYC not verified"}
+                )
 
             # 2. Perform risk analysis
             risk_score_result = self.fraud_service.get_risk_score(transaction_details)
             if risk_score_result.get("risk_score", 0) > 0.75:
-                return JSONResponse(status_code=403, content={"detail": "Transaction risk too high"})
+                return JSONResponse(
+                    status_code=403, content={"detail": "Transaction risk too high"}
+                )
 
-            velocity_check_result = self.velocity_checker.check_transaction_velocity(profile.laundr_id, transaction_details)
+            velocity_check_result = self.velocity_checker.check_transaction_velocity(
+                profile.laundr_id, transaction_details
+            )
             if velocity_check_result.get("velocity_exceeded"):
-                return JSONResponse(status_code=403, content={"detail": "Transaction velocity exceeded"})
+                return JSONResponse(
+                    status_code=403, content={"detail": "Transaction velocity exceeded"}
+                )
 
         response = await call_next(request)
         return response

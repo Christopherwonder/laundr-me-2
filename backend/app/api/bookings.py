@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException
 from typing import List
+
 from app.schemas.bookings import BookingCreate, BookingResponse, BookingUpdate
 from app.services import bookings as bookings_service
 from app.services import redis as redis_service
+from fastapi import APIRouter, HTTPException
 
 router = APIRouter()
 
